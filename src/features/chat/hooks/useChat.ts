@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { chatApi } from "../services/chatApi";
 import type { ChatState, Message } from "../types/chat";
 
 export const useChat = () => {
@@ -17,10 +16,9 @@ export const useChat = () => {
         text: "Você pode me perguntar sobre:",
         timestamp: new Date(),
         suggestions: [
-          "Há alguma taxa gratuita?",
-          "Como meus dados estão protegidos?",
-          "Posso cancelar minha assinatura?",
-          "O que há de novo?",
+          "Qual conteúdo do último curso?",
+          "Como funciona o onboarding?",
+          "Há vagas para o próximo TechDay?",
         ],
       },
     ],
@@ -35,28 +33,71 @@ export const useChat = () => {
       timestamp: new Date(),
     };
 
+    // Adiciona mensagem do usuário e ativa loader
     setState((prev) => ({
       ...prev,
       messages: [...prev.messages, userMessage],
       isTyping: true,
     }));
 
+    const botMsgId = state.messages.length + 2;
+
+    // Cria a resposta do bot (inicialmente vazia, mas SEM mostrar loader nessa msg)
+    setState((prev) => ({
+      ...prev,
+      messages: [
+        ...prev.messages,
+        {
+          id: botMsgId,
+          sender: "bot",
+          text: "",
+          timestamp: new Date(),
+        },
+      ],
+    }));
+
     try {
-      const response = await chatApi.sendMessage(text);
+      const response = await fetch("http://127.0.0.1:8000/perguntar", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ pergunta: text }),
+      });
 
-      const botMessage: Message = {
-        id: state.messages.length + 2,
-        sender: "bot",
-        text: response,
-        timestamp: new Date(),
-      };
+      const reader = response.body?.getReader();
+      if (!reader) throw new Error("Streaming não suportado");
 
-      setState((prev) => ({
-        ...prev,
-        messages: [...prev.messages, botMessage],
-        isTyping: false,
-      }));
-    } catch {
+      const decoder = new TextDecoder();
+      let accumulated = "";
+      let firstChunkArrived = false;
+
+      while (true) {
+        const { value, done } = await reader.read();
+        if (done) break;
+
+        const chunk = decoder.decode(value);
+        accumulated += chunk;
+
+        // Assim que chegar o primeiro chunk → remove loader
+        if (!firstChunkArrived) {
+          firstChunkArrived = true;
+          setState((prev) => ({ ...prev, isTyping: false }));
+        }
+
+        // Atualiza a mensagem do bot
+        setState((prev) => ({
+          ...prev,
+          messages: prev.messages.map((m) =>
+            m.id === botMsgId ? { ...m, text: accumulated } : m
+          ),
+        }));
+      }
+
+      // Garante loader off
+      setState((prev) => ({ ...prev, isTyping: false }));
+    } catch (err) {
+      console.error(err);
       setState((prev) => ({ ...prev, isTyping: false }));
     }
   };
