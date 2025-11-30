@@ -5,11 +5,15 @@ export const MessageBubble: React.FC<{
   message: Message;
   onSuggestionClick?: (suggestion: string) => void;
 }> = ({ message, onSuggestionClick }) => {
+
+  if (!message.text.trim() && !message.suggestions) {
+    return null;
+  }
+
   return (
     <div
-      className={`flex ${
-        message.sender === "user" ? "justify-end" : "justify-start"
-      } animate-in fade-in slide-in-from-bottom-2 duration-300`}
+      className={`flex ${message.sender === "user" ? "justify-end" : "justify-start"
+        } animate-in fade-in slide-in-from-bottom-2 duration-300`}
     >
       {message.sender === "bot" && (
         <div
@@ -25,9 +29,8 @@ export const MessageBubble: React.FC<{
 
       <div className="flex flex-col max-w-[75%]">
         <div
-          className={`rounded-2xl px-4 py-3 shadow-sm ${
-            message.sender === "user" ? "rounded-br-md" : "rounded-bl-md"
-          }`}
+          className={`rounded-2xl px-4 py-3 shadow-sm ${message.sender === "user" ? "rounded-br-md" : "rounded-bl-md"
+            }`}
           style={{
             background:
               message.sender === "user"
@@ -61,9 +64,8 @@ export const MessageBubble: React.FC<{
         </div>
 
         <span
-          className={`text-xs mt-1.5 ${
-            message.sender === "user" ? "text-right" : "text-left"
-          }`}
+          className={`text-xs mt-1.5 ${message.sender === "user" ? "text-right" : "text-left"
+            }`}
           style={{ color: "#585859" }}
         >
           {message.timestamp.toLocaleTimeString("pt-BR", {

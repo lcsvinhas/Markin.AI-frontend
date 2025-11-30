@@ -33,7 +33,6 @@ export const useChat = () => {
       timestamp: new Date(),
     };
 
-    // Adiciona mensagem do usuário e ativa loader
     setState((prev) => ({
       ...prev,
       messages: [...prev.messages, userMessage],
@@ -42,7 +41,6 @@ export const useChat = () => {
 
     const botMsgId = state.messages.length + 2;
 
-    // Cria a resposta do bot (inicialmente vazia, mas SEM mostrar loader nessa msg)
     setState((prev) => ({
       ...prev,
       messages: [
@@ -79,13 +77,11 @@ export const useChat = () => {
         const chunk = decoder.decode(value);
         accumulated += chunk;
 
-        // Assim que chegar o primeiro chunk → remove loader
         if (!firstChunkArrived) {
           firstChunkArrived = true;
           setState((prev) => ({ ...prev, isTyping: false }));
         }
 
-        // Atualiza a mensagem do bot
         setState((prev) => ({
           ...prev,
           messages: prev.messages.map((m) =>
@@ -94,7 +90,6 @@ export const useChat = () => {
         }));
       }
 
-      // Garante loader off
       setState((prev) => ({ ...prev, isTyping: false }));
     } catch (err) {
       console.error(err);
