@@ -48,22 +48,21 @@ A solução combina:
                      +----------+----------+
                                 |
                                 v
-           +----------------------------------------+
-           |               API Layer                |
-           |  Auth, Logging, Auditoria, PII Filter  |
-           +------------------+---------------------+
-                              |
-                              v
+           +-------------------------------------------+
+           |                  API Layer                |
+           |  FastAPI • Auth • Logs • Auditoria • PII  |
+           +--------------------+----------------------+
+                                |
+                                v
                 +-------------------------------+
-                |  Motor de RAG + Indexação     |
-                |  LangChain / LlamaIndex       |
+                |   Motor de RAG + Embeddings   |
+                |   Qwen 2.5 • LangChain        |
                 +--------------+----------------+
                                |
                                v
                 +-------------------------------+
                 |  Pipelines de Ingestão        |
-                |  Normalização, Metadados      |
-                |  Classificação, Redaction     |
+                |  PDFs • Normalização • PII    |
                 +--------------+----------------+
                                |
                                v
@@ -81,10 +80,10 @@ A solução combina:
 Aqui você encontra todos os documentos estratégicos e técnicos do projeto.
 
 📌 Estrutura do Case<br>
-👉 [/docs/estrutura-do-case.md](#)
+👉 [/docs/estrutura-do-case.md](docs/estrutura-do-case.md)
 
 📌 Levantamento Inicial<br>
-👉 [/docs/levantamento-inicial.md](#)
+👉 [/docs/levantamento-inicial.md](docs/CopilotoAI_Levantamento_Inicial.md)
 
 📌 Soluções, Mitigações e outros dados para a viabilidade<br>
 👉 [/docs/levantamento-inicial.md](#)
